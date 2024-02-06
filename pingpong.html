@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="1200" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 10,
+            dx: 2,
+            dy: -2
+        };
+
+        const paddleHeight = 100;
+        const paddleWidth = 10;
+        let paddle1Y = (canvas.height - paddleHeight) / 2;
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#fa1302';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle1() {
+            ctx.beginPath();
+            ctx.rect(0, paddle1Y, paddleWidth, paddleHeight);
+            ctx.fillStyle = '#0095DD';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBall();
+            drawPaddle1();
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            if (ball.y + ball.dy > canvas.height - ball.radius || ball.y + ball.dy < ball.radius) {
+                ball.dy = -ball.dy;
+            }
+
+            if (ball.x + ball.dx > canvas.width - ball.radius) {
+                ball.dx = -ball.dx;
+            }
+
+            if (ball.x + ball.dx < paddleWidth + ball.radius) {
+                if (ball.y > paddle1Y && ball.y < paddle1Y + paddleHeight) {
+                    ball.dx = -ball.dx;
+                } else {
+                    // Game over, reset ball position
+                    ball.x = canvas.width / 2;
+                    ball.y = canvas.height / 2;
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowUp' && paddle1Y > 0) {
+                paddle1Y -= 10;
+            } else if (event.key === 'ArrowDown' && paddle1Y < canvas.height - paddleHeight) {
+                paddle1Y += 10;
+            }
+        });
+
+        draw();
+    </script>
+</body>
+</html>
